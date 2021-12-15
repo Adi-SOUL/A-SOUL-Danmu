@@ -17,3 +17,8 @@
 ### 同时检索一个关键字下的多个内容：
   例如同时搜索奶淇琳和顶碗人：
   fans：奶淇琳；；顶碗人
+
+## 关于自己打包软件
+  Core.py对应LiveCore.exe
+  SearchCore.py对应SearchCore.exe
+  pyinstaller参数 -F就可以，-w的话没有控制台输出。
