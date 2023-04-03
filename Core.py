@@ -25,6 +25,7 @@ class LiveDanmaku():
 		return data_raw
 
 	def __decode_danmaku(self, data):
+
 		packet_length = int(data[:4].hex(), 16)
 		ver = int(data[6:8].hex(), 16)
 		op = int(data[8:12].hex(), 16)
@@ -80,11 +81,13 @@ class LiveDanmaku():
 			try:
 				recv_text = await websocket.receive()
 				self.__decode_danmaku(recv_text)
+			except asyncio.streams.IncompleteReadError:
+				print('IncompleteReadError')
 			except TypeError:
 				pass
 
 			now = time()
-			if now - start > 60:
+			if now - start > 20:
 				await websocket.send(bytes.fromhex(self.heartbeat))
 				start = now
 
@@ -94,11 +97,13 @@ class LiveDanmaku():
 			try:
 				recv_text = await websocket.receive()
 				self.__decode_danmaku_without_fans(recv_text)
+			except asyncio.streams.IncompleteReadError:
+				print('IncompleteReadError')
 			except TypeError:
 				pass
 
 			now = time()
-			if now - start > 60:
+			if now - start > 20:
 				await websocket.send(bytes.fromhex(self.heartbeat))
 				start = now
 
