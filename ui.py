@@ -12,6 +12,7 @@ import asyncio
 import sys
 from search import SearchWindow
 
+
 class Check(QThread):
 
 	trigger = pyqtSignal(str)
@@ -25,8 +26,8 @@ class Check(QThread):
 		while not stop:
 			room_id_url = 'https://api.live.bilibili.com/room/v1/Room/room_init?id={}'.format(self.room_id)
 			headers = {
-				'Host' : 'api.live.bilibili.com',
-				'User-Agent' : 'Mozilla/5.0'
+				'Host': 'api.live.bilibili.com',
+				'User-Agent': 'Mozilla/5.0'
 			}
 			try:
 				raw_room_info = post(url=room_id_url, headers=headers).json()['data']
@@ -47,6 +48,7 @@ class Get(QThread):
 		cmd_path = os.getcwd().split('\\')
 		[cmd_path.append(i) for i in ['Core', 'LiveCore.exe']]
 		cmd_path = '/'.join(cmd_path)
+		print(cmd_path)
 		self.cmd = ' '.join([cmd_path, roomid, log_file, str(fans)])
 
 	def run(self):
@@ -71,12 +73,13 @@ class Window(QMainWindow, Ui_LiveDanmaku):
 		self.short_name = ''
 		self.thread = None
 		self.fans = 0
+		self.thread_run = None
 
 	def __get_room_info(self, room_id):
 		room_id_url = 'https://api.live.bilibili.com/room/v1/Room/room_init?id={}'.format(room_id)
 		headers = {
-			'Host' : 'api.live.bilibili.com',
-			'User-Agent' : 'Mozilla/5.0'
+			'Host': 'api.live.bilibili.com',
+			'User-Agent': 'Mozilla/5.0'
 		}
 		raw_room_info = post(url=room_id_url, headers=headers).json()['data']
 		status = str(raw_room_info['live_status'])
@@ -139,8 +142,8 @@ class Window(QMainWindow, Ui_LiveDanmaku):
 				raise FileError
 			if self.roomid == '':
 				raise RoomError
-			if self.status != '1':
-				raise LiveEnd
+			# if self.status != '1':
+			# 	raise LiveEnd
 			'''
 			run here
 			'''
@@ -155,9 +158,9 @@ class Window(QMainWindow, Ui_LiveDanmaku):
 			'''
 			check here
 			'''
-			self.thread = Check(raw_room)
-			self.thread.trigger.connect(self.__finsh)
-			self.thread.start()
+			# self.thread = Check(raw_room)
+			# self.thread.trigger.connect(self.__finsh)
+			# self.thread.start()
 
 		except FileError:
 			self.__show_dialog_critical('请选择文件位置！')
@@ -182,7 +185,7 @@ class Window(QMainWindow, Ui_LiveDanmaku):
 
 	def __stop(self):
 		try:
-			if self.thread == None:
+			if self.thread_run == None:
 				raise EarlyStop
 		except EarlyStop:
 			self.__show_dialog_critical('请先开始记录！')
